@@ -67,7 +67,7 @@ services:
             retries: 3
             timeout: 5s
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+        image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.0'
         ports:
             - '9200:9200'
             - '9300:9300'
@@ -75,7 +75,7 @@ services:
             - xpack.security.enabled=false
             - discovery.type=single-node
             - bootstrap.memory_lock=true
-            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+            - 'ES_JAVA_OPTS=-Xms256m -Xmx256m'
         ulimits:
             memlock:
                 soft: -1
@@ -88,9 +88,9 @@ services:
         networks:
             - sail
     kibana:
-        image: docker.elastic.co/kibana/kibana:7.17.0
+        image: 'docker.elastic.co/kibana/kibana:7.17.0'
         ports:
-            - 5601:5601
+            - '5601:5601'
         environment:
             ELASTICSEARCH_HOSTS: 'http://elasticsearch:9200'
         networks:
