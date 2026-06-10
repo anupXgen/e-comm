@@ -1,0 +1,90 @@
+name: Build, Push, and Deploy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ startsWith(github.ref_name, 'release-') && 'production' || 'staging' }}
+
+    env:
+      IMAGE_NAME: anupxgen/bagisto                                          # ← change image name
+      TAG: ${{ startsWith(github.ref_name, 'release-') && 'production' || 'staging' }}
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Step 3: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build --build-arg APP_ENV=${{ env.TAG }} -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
+
+      # Step 4: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+
+      # Step 5: Deploy to EC2
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          passphrase: ${{ secrets.EC2_PASSPHRASE }}
+          script: |
+            export IMAGE_NAME=${{ env.IMAGE_NAME }}
+            export TAG=${{ env.TAG }}
+
+            echo "Logging into Docker Hub..."
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            echo "Stopping and removing existing container..."
+            docker stop bagisto-${TAG} || true
+            docker rm bagisto-${TAG} || true
+
+            echo "Pulling the latest Docker image..."
+            docker pull ${IMAGE_NAME}:${TAG}
+
+            if [ "${TAG}" = "production" ]; then
+              PORT=8881
+            else
+              PORT=8882
+            fi
+
+            echo "Running the new container on port ${PORT}..."
+            docker run -d \
+              --name bagisto-${TAG} \
+              -p ${PORT}:80 \
+              -e APP_ENV=${TAG} \
+              -e APP_KEY=${{ secrets.APP_KEY }} \
+              -e DB_HOST=172.17.0.1 \
+              -e DB_PORT=3306 \
+              -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
+              -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
+              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -v bagisto-${TAG}-storage:/var/www/html/storage \
+              ${IMAGE_NAME}:${TAG}
+
+            echo "Running migrations..."
+            docker exec bagisto-${TAG} php artisan migrate --force
+
+            echo "Caching config..."
+            docker exec bagisto-${TAG} php artisan config:cache
+            docker exec bagisto-${TAG} php artisan route:cache
+            docker exec bagisto-${TAG} php artisan view:cache
+            docker exec bagisto-${TAG} php artisan storage:link
+
+            echo "Cleaning up old images..."
+            docker image prune -a -f
+
+            echo "✅ bagisto-${TAG} deployed on port ${PORT}"
