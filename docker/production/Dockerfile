@@ -124,7 +124,7 @@ RUN git clone --depth 1 --branch ${BAGISTO_VERSION} \
 # ---------------------------------------------------------------------------
 RUN cp .env.example .env \
     && sed -i 's/^APP_DEBUG=.*/APP_DEBUG=true/' .env \
-    && sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env \
+    && sed -i 's/^DB_HOST=.*/DB_HOST=xgenmedia574.cseywhzznj3t.us-east-2.rds.amazonaws.com/' .env \
     && sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env \
     && sed -i 's/^DB_DATABASE=.*/DB_DATABASE=e_comm/' .env \
     && sed -i 's/^DB_USERNAME=.*/DB_USERNAME=e_comm_usr/' .env \

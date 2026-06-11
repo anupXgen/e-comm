@@ -43,6 +43,8 @@ sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
 sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
 sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
 
+[ -n "$APP_ENV" ]      && sed -i "s/^APP_ENV=.*/APP_ENV=${APP_ENV}/" .env
+[ -n "$APP_DEBUG" ]    && sed -i "s/^APP_DEBUG=.*/APP_DEBUG=${APP_DEBUG}/" .env
 [ -n "$APP_URL" ]      && sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" .env
 [ -n "$APP_KEY" ]      && sed -i "s|^APP_KEY=.*|APP_KEY=${APP_KEY}|" .env
 [ -n "$APP_LOCALE" ]   && sed -i "s/^APP_LOCALE=.*/APP_LOCALE=${APP_LOCALE}/" .env
