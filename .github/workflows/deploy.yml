@@ -56,9 +56,9 @@ jobs:
             docker pull ${IMAGE_NAME}:${TAG}
 
             if [ "${TAG}" = "production" ]; then
-              PORT=8881
+              PORT=8899
             else
-              PORT=8882
+              PORT=8898
             fi
 
             echo "Running the new container on port ${PORT}..."
@@ -67,7 +67,7 @@ jobs:
               -p ${PORT}:80 \
               -e APP_ENV=${TAG} \
               -e APP_KEY=${{ secrets.APP_KEY }} \
-              -e DB_HOST=172.17.0.1 \
+              -e DB_HOST=xgenmedia574.cseywhzznj3t.us-east-2.rds.amazonaws.com \
               -e DB_PORT=3306 \
               -e DB_DATABASE=${{ secrets.DB_DATABASE }} \
               -e DB_USERNAME=${{ secrets.DB_USERNAME }} \
