@@ -80,6 +80,11 @@ fi
 
 log "Starting services via Supervisor..."
 
+
+chown -R www-data:www-data /var/www/bagisto/storage
+chown -R www-data:www-data /var/www/bagisto/bootstrap/cache
+chmod -R 775 /var/www/bagisto/storage
+chmod -R 775 /var/www/bagisto/bootstrap/cache
 # ==========================================================================
 # Hand off to CMD (supervisord)
 # ==========================================================================
