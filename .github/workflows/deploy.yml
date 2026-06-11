@@ -26,7 +26,7 @@ jobs:
       # Step 3: Build the Docker image
       - name: Build Docker image
         run: |
-          docker build --build-arg APP_ENV=${{ env.TAG }} -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} -f docker/production/Dockerfile .
+          docker build --build-arg APP_ENV=${{ env.TAG }} -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} -f docker/production/Dockerfile --build-context app=. docker/production
 
       # Step 4: Push the Docker image to Docker Hub
       - name: Push Docker image
