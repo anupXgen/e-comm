@@ -123,12 +123,12 @@ RUN git clone --depth 1 --branch ${BAGISTO_VERSION} \
 # Prepare .env with internal-MySQL defaults
 # ---------------------------------------------------------------------------
 RUN cp .env.example .env \
-    && sed -i 's/^APP_DEBUG=.*/APP_DEBUG=false/' .env \
+    && sed -i 's/^APP_DEBUG=.*/APP_DEBUG=true/' .env \
     && sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env \
     && sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env \
-    && sed -i 's/^DB_DATABASE=.*/DB_DATABASE=bagisto/' .env \
-    && sed -i 's/^DB_USERNAME=.*/DB_USERNAME=bagisto/' .env \
-    && sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=bagisto/' .env \
+    && sed -i 's/^DB_DATABASE=.*/DB_DATABASE=e_comm/' .env \
+    && sed -i 's/^DB_USERNAME=.*/DB_USERNAME=e_comm_usr/' .env \
+    && sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=ecomm_Xgen26!/' .env \
     && sed -i 's|^APP_URL=.*|APP_URL=http://localhost|' .env
 
 
