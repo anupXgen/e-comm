@@ -10,7 +10,7 @@ jobs:
     environment: ${{ startsWith(github.ref_name, 'release-') && 'production' || 'staging' }}
 
     env:
-      IMAGE_NAME: anupxgen/bagisto                                          # ← change image name
+      IMAGE_NAME: anupxgen/e-comm                                          # ← change image name
       TAG: ${{ startsWith(github.ref_name, 'release-') && 'production' || 'staging' }}
 
     steps:
@@ -26,7 +26,7 @@ jobs:
       # Step 3: Build the Docker image
       - name: Build Docker image
         run: |
-          docker build --build-arg APP_ENV=${{ env.TAG }} -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} .
+          docker build --build-arg APP_ENV=${{ env.TAG }} -t ${{ env.IMAGE_NAME }}:${{ env.TAG }} -f docker/production/Dockerfile .
 
       # Step 4: Push the Docker image to Docker Hub
       - name: Push Docker image
